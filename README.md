@@ -50,9 +50,12 @@
 ```
 - $ bundle install
 
-4. Generate a User from devise
+## 4. Generate a User from devise
+- $ rails generate devise:install
+- $ rails generate devise User
+- $ rails db:migrate
 
-5. Set default devise configurations
+5. Set default devise default configurations
 
 5. Generate a private controller to get confirmation that devise/jwt are setup properly
 
