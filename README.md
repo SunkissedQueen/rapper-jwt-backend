@@ -163,5 +163,22 @@ DEVISE_JWT_SECRET_KEY=<your_rake_secret>
   end
 ```
 
-10. Generate jwt_denylist model 
+## 10. Revocation Strategy
+- In this strategy, a 'denylist` database table is used to store a list of revoked JWT tokens. The jti claim, which uniquely identifies a token, is persisted. The exp claim is also stored to allow the clean-up of stale tokens.
+### Generate jwt_denylist model 
+- $ rails generate model jwt_denylist
+### Modify migration for jwt configuration
+***NOTE: this table does not follow normal naming convention will be singular.***
+```
+  def change
+    create_table :jwt_denylist do |t|
+      t.string :jti, null: false
+      t.datetime :exp, null: false
+    end
+    add_index :jwt_denylist, :jti
+  end
+```
+### Update schema
+- $ rails db:migrate
+
 11. Update the user model for JWT
