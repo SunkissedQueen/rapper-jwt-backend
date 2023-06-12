@@ -1,8 +1,11 @@
+# Rails API with Devise and JWT
+
 ## References
 [Dakota L Martinez](https://github.com/DakotaLMartinez/rails-devise-jwt-tutorial)  
 [Villy Siu](https://medium.com/@villysiu/authenticate-user-with-devise-gem-and-devise-jwt-in-react-application-1-2-a869477a2cb3)  
 [Elyse Montano](https://github.com/elysemontano/apartment-app-backend)
 
+## Rails API configuration with Devise and JWT  
 ## 1. Create initial API configuration
 - $ `rails new <api_name> -d postgresql -T`
 - $ `cd <api_name>`
@@ -76,7 +79,7 @@
   config.navigational_formats = []
 ```
 
-## 5. Controllers and route for devise/jwt
+## 6. Controllers and route for devise/jwt
 - When the user signs in, Devise creates a user session which shows authentication. We need to create two controllers (sessions, registrations) to handle sign ups and sign ins.
 - The private test will give confirmation that a jwt is successfully generated. 
 ### Generate a private controller 
@@ -119,7 +122,7 @@
     end
   end
 ```
-7. Override the default devise routes in the routes.rb
+## 7. Override the default devise routes in the routes.rb
 ```rb
   # config/routes.rb                                                            
   Rails.application.routes.draw do
@@ -196,3 +199,70 @@ DEVISE_JWT_SECRET_KEY=<your_rake_secret>
           :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
   end
 ```
+
+## Rapper Resources/Seeds
+- We need to ensure there is a relationship between users and rappers. Rappers will belong to a user; a user can have many rappers.
+### Generate rapper resources
+- $ rails generate resource Rapper name:string genre:string songs:string awards:integer price:string rating:float image:text user_id:integer
+### Establish relationships
+```rb
+  # app/models/user.rb
+  has_many :rappers
+  # app/models/rapper.rb
+  belongs_to :user
+```
+### Update schema
+- $ rails db:migrate  
+
+### Seeds
+- We must have users before rappers are created. Active Record method `.where` will query the database for an email then `.first_or_create` method checks whether or not first instance in the array is nil. A nil value will trigger the `.create` method to create a user with the indicated email and password.
+- Create an array to store a list of rappers
+- Then use .each ruby method to create rappers associated to either user
+```rb
+  # db/seeds.rb
+  user1 = User.where(email: "test1@example.com").first_or_create(password: "password", password_confirmation: "password")
+  user2 = User.where(email: "test2@example.com").first_or_create(password: "password", password_confirmation: "password")
+
+  charlie_rappers = [
+    {
+      name:'Charla Mae',
+      genre:'Heavy Metal',
+      songs:'In Da Code, Code Playing Tricks on Me',
+      awards:3,
+      price:'$70/hr', 
+      rating:4.4,
+      image:'https://freesvg.org/img/cyberscooty-hip_hop_kid_2.png'
+    },{
+      name:'Nicod',
+      genre:'Classical',
+      songs:'Code Takes Two, It Was a Code Day',
+      awards:3,
+      price:'$68/hr', 
+      rating:4.4,
+      image:'https://freesvg.org/img/cyberscooty-hip_hop_kid_1.png'
+    }
+  ]
+
+  freelance_rappers = [
+    {
+      name:'DOAX',
+      genre:'Gangsta Rap',
+      songs:'Can Code This, Nothing But a Code Thang',
+      awards:5,
+      price:'$80/hr', 
+      rating:4.9,
+      image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLY73XNvTkFW9UpjV5sVczHTvYJpcZZOEyaQ&usqp=CAU'
+    } 
+  ]
+
+charlie_rappers.each do |rapper|
+  user1.rappers.create(rapper)
+  puts "creating: #{rapper}"
+end
+
+freelance_rappers.each do |rapper|
+  user2.rappers.create(rapper)
+  puts "creating: #{rapper}"
+end
+```
+

@@ -1,0 +1,2 @@
+class RappersController < ApplicationController
+end
