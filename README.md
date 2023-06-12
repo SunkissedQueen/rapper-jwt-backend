@@ -1,6 +1,6 @@
 ## References
 [Dakota L Martinez](https://github.com/DakotaLMartinez/rails-devise-jwt-tutorial)  
-[Villy Siu](https://medium.com/@villysiu/authenticate-user-with-devise-gem-and-devise-jwt-in-react-application-1-2-a869477a2cb3)
+[Villy Siu](https://medium.com/@villysiu/authenticate-user-with-devise-gem-and-devise-jwt-in-react-application-1-2-a869477a2cb3)  
 [Elyse Montano](https://github.com/elysemontano/apartment-app-backend)
 
 ## 1. Create initial API configuration
