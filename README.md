@@ -181,4 +181,11 @@ DEVISE_JWT_SECRET_KEY=<your_rake_secret>
 ### Update schema
 - $ rails db:migrate
 
-11. Update the user model for JWT
+## 11. Update the user model for JWT
+- # remove the following devise attributes `:recoverable, :rememberable, :validatable` and replace with jwt attributes
+```rb
+  class User < ApplicationRecord
+    devise :database_authenticatable, :registerable,
+          :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
+  end
+```
