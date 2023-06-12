@@ -4,19 +4,20 @@
 [Elyse Montano](https://github.com/elysemontano/apartment-app-backend)
 
 ## 1. Create initial API configuration
-- $ rails new <api_name> -d postgresql -T
-- $ cd <api_name>
-- $ rails db:create
-- $ rails s
-- $ bundle add rspec-rails
-- $ rails generate rspec:install
-- $ git branch -m main
-- $ git remote add origin <url for empty repo>
-- $ git branch -m main
-- $ git status
-- $ ga .
-- $ gcmsg "initial commit"
-- $ git push origin main
+- $ `rails new <api_name> -d postgresql -T`
+- $ `cd <api_name>`
+- $ `rails db:create`
+- $ `rails s`
+- $ `bundle add rspec-rails`
+- $ `rails generate rspec:install`
+- $ `git branch -m main`
+- $ `git remote add origin <url for empty repo>`
+- $ `git branch -m main`
+- $ `git status`
+- $ `git add .`
+- $ `git commit -m "initial commit"`
+- $ `git push origin main`
+- Set branch protections
 
 ## 2. Add the appropriate ruby gems for devise and jwt setup
 ```rb
@@ -50,9 +51,9 @@
 - $ bundle install
 
 ## 4. Generate a User from devise
-- $ rails generate devise:install
-- $ rails generate devise User
-- $ rails db:migrate
+- $ `rails generate devise:install`
+- $ `rails generate devise User`
+- $ `rails db:migrate`
 
 ## 5. Set default devise default configurations
 ```rb
@@ -79,7 +80,7 @@
 - When the user signs in, Devise creates a user session which shows authentication. We need to create two controllers (sessions, registrations) to handle sign ups and sign ins.
 - The private test will give confirmation that a jwt is successfully generated. 
 ### Generate a private controller 
-- $ rails g controller private test
+- $ `rails g controller private test`
 ***NOTE: this syntax allows a controller to be created with a method***
 ```rb
   # to get confirmation that devise/jwt are setup properly after authenication
@@ -93,7 +94,7 @@
   end
 ```
 ### Generate users sessions and registrations controllers
-- $ rails g devise:controllers users -c sessions registrations
+- $ `rails g devise:controllers users -c sessions registrations`
 - Now, we have to tell devise to respond to JSON requests by adding the following methods in the RegistrationsController and SessionsController.
 ```rb
   # app/controllers/users/registrations_controller.rb
@@ -139,7 +140,7 @@
 ### Generate secret key 
 - Secret key is used to create JWT token.  
 ***NOTE: Never share your secrets. Prevent pushing it to a remote repository by storing in an environment variable.***
-- $ bundle exec rake secret
+- $ `bundle exec rake secret`
 ### Store in .env file
 - Create a .env file in the project root and add the secret key inside.
 ```rb
@@ -170,7 +171,7 @@ DEVISE_JWT_SECRET_KEY=<your_rake_secret>
 ## 10. Revocation Strategy
 - In this strategy, a 'denylist` database table is used to store a list of revoked JWT tokens. The jti claim, which uniquely identifies a token, is persisted. The exp claim is also stored to allow the clean-up of stale tokens.
 ### Generate jwt_denylist model 
-- $ rails generate model jwt_denylist
+- $ `rails generate model jwt_denylist`
 ### Modify migration for jwt configuration  
 ***NOTE: this table does not follow normal naming convention will be singular.***
 ```
@@ -184,7 +185,7 @@ DEVISE_JWT_SECRET_KEY=<your_rake_secret>
   end
 ```
 ### Update schema
-- $ rails db:migrate
+- $ `rails db:migrate`
 
 ## 11. Update the user model for JWT
 - Remove the following devise attributes `:recoverable, :rememberable, :validatable` and replace with jwt attributes
