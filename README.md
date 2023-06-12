@@ -29,7 +29,6 @@
   # 'dotenv-rails' is for storing secret key in ENV file
   gem 'dotenv-rails', groups: [:development, :test]
 ```
-
 ## 3. cors.rb file
 - Create config/initializers/cors.rb file
 - Add the authorization code for devise/JWT to the cors.rb file
@@ -55,8 +54,26 @@
 - $ rails generate devise User
 - $ rails db:migrate
 
-5. Set default devise default configurations
+## 5. Set default devise default configurations
+```rb
+  # Configurations we will need to make our app work properly with Devise. 
+  # set up the default url options for the Devise mailer in our development environment
+  # config/environments/development.rb
+  config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
+  # instruct Devise to listen for logout requests via a get request instead of the default delete
+  # config/initializers/devise.rb
+
+  # Find this line:
+  config.sign_out_via = :delete
+  # And replace it with this:
+  config.sign_out_via = :get
+
+  # set our navigational formats to empty in the generated devise.
+  # config/initializers/devise.rb
+  # ==> Navigation configuration
+  config.navigational_formats = []
+```
 5. Generate a private controller to get confirmation that devise/jwt are setup properly
 
 6. Generate users sessions and registrations controllers to manage the tokens
