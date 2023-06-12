@@ -134,8 +134,34 @@
   end
 ```
 
-8. Perform secret key configuration so that the token is not shared publicly
-9. Configure the devise-jwt in devise.rb
+## 8. Secret key configuration
+### Generate secret key 
+- Secret key is used to create JWT token.  
+***NOTE: Never share your secrets. Prevent pushing it to a remote repository by storing in an environment variable.***
+- $ bundle exec rake secret
+### Store in .env file
+- Create a .env file in the project root and add the secret key inside.
+```rb
+# .env
+***NOTE: Do not use the angle brackets***
+DEVISE_JWT_SECRET_KEY=<your_rake_secret>
+```
+- Add .env to .gitignore
+### 9. Configure the devise-jwt in devise.rb
+- On every post request to login, append JWT for any successful response. On a delete request to logout, the token should be revoked. The jwt.expiration_time sets the expiration time for the generated token. In this example, it’s 5 minutes.
+```rb
+  # append JWT to successful response and revoke on logout
+  config.jwt do |jwt|
+    jwt.secret = ENV['DEVISE_JWT_SECRET_KEY']
+    jwt.dispatch_requests = [
+      ['POST', %r{^/login$}],
+    ]
+    jwt.revocation_requests = [
+      ['DELETE', %r{^/logout$}]
+    ]
+    jwt.expiration_time = 5.minutes.to_i
+  end
+```
 
 10. Generate jwt_denylist model 
 11. Update the user model for JWT

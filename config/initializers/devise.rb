@@ -263,7 +263,20 @@ Devise.setup do |config|
   # should add them to the navigational formats lists.
   #
   # The "*/*" below is required to match Internet Explorer requests.
+  # not using views since this app is an API
   config.navigational_formats = []
+  
+  # append JWT to successful response and revoke on logout
+  config.jwt do |jwt|
+    jwt.secret = ENV['DEVISE_JWT_SECRET_KEY']
+    jwt.dispatch_requests = [
+      ['POST', %r{^/login$}],
+    ]
+    jwt.revocation_requests = [
+      ['DELETE', %r{^/logout$}]
+    ]
+    jwt.expiration_time = 5.minutes.to_i
+  end
 
   # The default HTTP method used to sign out a resource. Default is :delete.
   config.sign_out_via = :get
