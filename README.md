@@ -4,14 +4,14 @@
 [Elyse Montano](https://github.com/elysemontano/apartment-app-backend)
 
 ## 1. Create initial API configuration
-- $ rails new rapper_app_backend -d postgresql -T
-- $ cd rapper_app_backend
+- $ rails new <api_name> -d postgresql -T
+- $ cd <api_name>
 - $ rails db:create
 - $ rails s
 - $ bundle add rspec-rails
 - $ rails generate rspec:install
 - $ git branch -m main
-- $ git remote add origin https://github.com/SunkissedQueen/rapper-jwt-backend.git
+- $ git remote add origin <url for empty repo>
 - $ git branch -m main
 - $ git status
 - $ ga .
@@ -96,7 +96,7 @@
 - $ rails g devise:controllers users -c sessions registrations
 - Now, we have to tell devise to respond to JSON requests by adding the following methods in the RegistrationsController and SessionsController.
 ```rb
-  # app/users/registrations_controller.rb
+  # app/controllers/users/registrations_controller.rb
   class Users::RegistrationsController < Devise::RegistrationsController
     respond_to :json
     def create
@@ -106,7 +106,7 @@
       render json: resource
     end
   end
-  # app/users/sessions_controller.rb
+  # app/controllers/users/sessions_controller.rb
   class Users::SessionsController < Devise::SessionsController
     respond_to :json
     private
@@ -120,6 +120,7 @@
 ```
 7. Override the default devise routes in the routes.rb
 ```rb
+  # config/routes.rb                                                            
   Rails.application.routes.draw do
     get 'private/test'
     devise_for :users, path: '', path_names: {
@@ -142,7 +143,7 @@
 ### Store in .env file
 - Create a .env file in the project root and add the secret key inside.
 ```rb
-# .env
+# .env  
 ***NOTE: Do not use the angle brackets***
 DEVISE_JWT_SECRET_KEY=<your_rake_secret>
 ```
@@ -150,6 +151,9 @@ DEVISE_JWT_SECRET_KEY=<your_rake_secret>
 ### 9. Configure the devise-jwt in devise.rb
 - On every post request to login, append JWT for any successful response. On a delete request to logout, the token should be revoked. The jwt.expiration_time sets the expiration time for the generated token. In this example, it’s 5 minutes.
 ```rb
+  # config/initializers/devise.rb
+  # place between navigational.format and sign-out
+  
   # append JWT to successful response and revoke on logout
   config.jwt do |jwt|
     jwt.secret = ENV['DEVISE_JWT_SECRET_KEY']
@@ -167,9 +171,10 @@ DEVISE_JWT_SECRET_KEY=<your_rake_secret>
 - In this strategy, a 'denylist` database table is used to store a list of revoked JWT tokens. The jti claim, which uniquely identifies a token, is persisted. The exp claim is also stored to allow the clean-up of stale tokens.
 ### Generate jwt_denylist model 
 - $ rails generate model jwt_denylist
-### Modify migration for jwt configuration
+### Modify migration for jwt configuration  
 ***NOTE: this table does not follow normal naming convention will be singular.***
 ```
+  # db/migrate/20230612020047_create_jwt_denylists.rb
   def change
     create_table :jwt_denylist do |t|
       t.string :jti, null: false
@@ -182,8 +187,9 @@ DEVISE_JWT_SECRET_KEY=<your_rake_secret>
 - $ rails db:migrate
 
 ## 11. Update the user model for JWT
-- # remove the following devise attributes `:recoverable, :rememberable, :validatable` and replace with jwt attributes
+- Remove the following devise attributes `:recoverable, :rememberable, :validatable` and replace with jwt attributes
 ```rb
+  # app/models/user.rb
   class User < ApplicationRecord
     devise :database_authenticatable, :registerable,
           :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
