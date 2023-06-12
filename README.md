@@ -69,15 +69,70 @@
   # And replace it with this:
   config.sign_out_via = :get
 
-  # set our navigational formats to empty in the generated devise.
+  # set our navigational formats to empty in the generated devise since this is an API that will not use views
   # config/initializers/devise.rb
   # ==> Navigation configuration
   config.navigational_formats = []
 ```
-5. Generate a private controller to get confirmation that devise/jwt are setup properly
 
-6. Generate users sessions and registrations controllers to manage the tokens
+## 5. Controllers and route for devise/jwt
+- When the user signs in, Devise creates a user session which shows authentication. We need to create two controllers (sessions, registrations) to handle sign ups and sign ins.
+- The private test will give confirmation that a jwt is successfully generated. 
+### Generate a private controller 
+- $ rails g controller private test
+***NOTE: this syntax allows a controller to be created with a method***
+```rb
+  # to get confirmation that devise/jwt are setup properly after authenication
+  class PrivateController < ApplicationController
+    before_action :authenticate_user!
+    def test
+      render json: {
+        message: "This is a private message for #{current_user.email} you should only see if you've got a correct token"
+      }
+    end
+  end
+```
+### Generate users sessions and registrations controllers
+- $ rails g devise:controllers users -c sessions registrations
+- Now, we have to tell devise to respond to JSON requests by adding the following methods in the RegistrationsController and SessionsController.
+```rb
+  # app/users/registrations_controller.rb
+  class Users::RegistrationsController < Devise::RegistrationsController
+    respond_to :json
+    def create
+      build_resource(sign_up_params)
+      resource.save
+      sign_in(resource_name, resource)
+      render json: resource
+    end
+  end
+  # app/users/sessions_controller.rb
+  class Users::SessionsController < Devise::SessionsController
+    respond_to :json
+    private
+    def respond_with(resource, _opts = {})
+      render json: resource
+    end
+    def respond_to_on_destroy
+      render json: { message: "Logged out." }
+    end
+  end
+```
 7. Override the default devise routes in the routes.rb
+```rb
+  Rails.application.routes.draw do
+    get 'private/test'
+    devise_for :users, path: '', path_names: {
+      sign_in: 'login',
+      sign_out: 'logout',
+      registration: 'signup'
+    },
+    controllers: {
+      sessions: 'users/sessions',
+      registrations: 'users/registrations'
+    }
+  end
+```
 
 8. Perform secret key configuration so that the token is not shared publicly
 9. Configure the devise-jwt in devise.rb
