@@ -66,3 +66,8 @@ end
 
 
 gem "rspec-rails", "~> 6.0"
+
+gem 'rack-cors'
+gem 'devise'
+gem 'devise-jwt'
+gem 'dotenv-rails', groups: [:development, :test]
